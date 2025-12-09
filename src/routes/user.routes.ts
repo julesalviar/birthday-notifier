@@ -21,9 +21,16 @@ router.post('/user', async (req: Request, res: Response): Promise<void> => {
   }
 });
 
-router.delete('/user', (req: Request, res: Response): void => {
-  console.log('DELETE /user');
-  res.status(200).json({ message: 'User deleted' });
+router.delete('/user/:userId', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const userId = req.params.userId;
+    await userService.deleteUser(userId);
+
+    res.status(200).json({ message: 'User deleted' });
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    res.status(500).json({ message: 'Error deleting user' });
+  }
 });
 
 export default router;

@@ -20,4 +20,8 @@ export class UserService {
 
     return await this.userRepo.create(userEntity);
   }
+
+  async deleteUser(userId: string): Promise<boolean> {
+    return await this.userRepo.delete(userId);
+  }
 }

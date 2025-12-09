@@ -21,4 +21,14 @@ export abstract class BaseRepository<T extends Record<string, any>> {
       throw e;
     }
   }
+
+  async delete(id: string): Promise<boolean> {
+    try {
+      const key = { [this.getPartitionKey()]: id };
+      await this.entity.delete(key);
+      return true;
+    } catch (e) {
+      throw e;
+    }
+  }
 }

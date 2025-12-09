@@ -14,4 +14,8 @@ export class UserRepository extends BaseRepository<UserType>{
   async create(user: UserType): Promise<UserType> {
     return super.create(user);
   }
+
+  async delete(userId: string): Promise<boolean> {
+    return super.delete(userId);
+  }
 }
