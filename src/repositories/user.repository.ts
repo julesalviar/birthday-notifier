@@ -1,6 +1,6 @@
 import {BaseRepository} from "./base.repository";
-import {UserEntity as UserType} from "../types/user.type";
-import {UserEntity} from "../entities/user.entity";
+import {UserEntity as UserType} from "../models/types";
+import {UserEntity} from "../models/user.entity";
 
 export class UserRepository extends BaseRepository<UserType>{
   constructor() {

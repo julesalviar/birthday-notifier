@@ -12,6 +12,11 @@ export const config = {
   },
   dynamodb: {
     userTableName: process.env.DYNAMODB_USER_TABLE_NAME || 'Users',
+    messageLogTableName: process.env.DYNAMODB_MESSAGE_LOG_TABLE_NAME || 'MessageLogs'
   },
+  notification: {
+    hookUrl: process.env.NOTIFICATION_HOOK_URL || '',
+    timeToSend: 9,
+  }
 };
 

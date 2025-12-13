@@ -1,6 +1,6 @@
 import {randomUUID} from "node:crypto";
-import {User, UserEntity} from "../types/user.type";
 import {UserRepository} from "../repositories/user.repository";
+import {User, UserEntity} from "../models/types";
 
 export class UserService {
   private userRepo: UserRepository;

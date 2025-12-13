@@ -1,5 +1,5 @@
 import {BillingMode, CreateTableCommand, DescribeTableCommand, DynamoDBClient} from "@aws-sdk/client-dynamodb";
-import {config} from "../config";
+import {config} from "../config/config";
 
 const dynamoClient = new DynamoDBClient({
   region: config.aws.region,
