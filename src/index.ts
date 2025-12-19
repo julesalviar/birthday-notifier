@@ -1,20 +1,59 @@
-import express, { Application } from 'express';
+import express from 'express';
 import { config } from './config/config';
-import userRoutes from './routes/user.routes';
+import {createRouter} from './routes/routes';
+import {setupInfra} from "./scripts/setup";
+import {UserService} from "./services/user.service";
+import {MessageWorker} from "./workers/message.worker";
+import {BirthdayPoller} from "./workers/birthday.poller";
 
-const app: Application = express();
+async function main() {
+  try {
+    console.log('Starting server...');
 
-app.use(express.json());
-app.use('/', userRoutes);
+    const queueUrl = await setupInfra();
 
-const startServer = (): void => {
-  app.listen(config.server.port, () => {
-    console.log(`Birthday Notifier server running on port ${config.server.port}`);
-    console.log(`POST endpoint available at http://localhost:${config.server.port}/user`);
-  });
-};
+    const userService = new UserService();
+    userService.setQueueUrl(queueUrl);
 
-startServer();
+    const app = express();
+    app.use(express.json());
 
-export default app;
+    const router = createRouter(userService);
+    app.use('/api', router);
 
+    const server = app.listen(config.server.port, () => {
+      console.log(`Birthday Notifier server running on port ${config.server.port}`);
+      console.log(`POST endpoint available at http://localhost:${config.server.port}/api/user`);
+    });
+
+    const messageWorker = new MessageWorker(queueUrl);
+    messageWorker.start().catch(e => console.error('Error starting message worker:', e));
+
+    const birthdaysPoller = new BirthdayPoller(queueUrl);
+    birthdaysPoller.start().catch(e => console.error('Error starting birthday poller:', e));
+
+    process.on('SIGTERM', () => {
+      console.log('SIGTERM received,Stopping server...');
+      messageWorker.stop();
+      birthdaysPoller.stop();
+      server.close(() => {
+        console.log('Server stopped.');
+        process.exit(0);
+      });
+    });
+
+    process.on('SIGINT', () => {
+      console.log('SIGINT received,Stopping server...');
+      messageWorker.stop();
+      birthdaysPoller.stop();
+      server.close(() => {
+        console.log('Server stopped.');
+      })
+    })
+  } catch (e) {
+    console.error('Error starting server:', e);
+    process.exit(1);
+  }
+}
+
+main();

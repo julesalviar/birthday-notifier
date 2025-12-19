@@ -43,6 +43,15 @@ export abstract class BaseRepository<T extends Record<string, any>> {
     }
   }
 
+  async findAll(): Promise<T[]> {
+    try {
+      const result = await this.entity.scan();
+      return (result.Items || []) as T[];
+    } catch (e) {
+      throw e;
+    }
+  }
+
   async findByIdOrFail(id: string): Promise<T> {
     const item = await this.findById(id);
     if (!item) {

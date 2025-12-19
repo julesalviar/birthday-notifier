@@ -17,6 +17,10 @@ export const config = {
   notification: {
     hookUrl: process.env.NOTIFICATION_HOOK_URL || '',
     timeToSend: 9,
-  }
+  },
+  sqs: {
+    queueName: process.env.SQS_QUEUE_NAME || 'birthday-notification-queue',
+    dlqName: process.env.SQS_DLQ_NAME || 'birthday-notification-dlq',
+  },
 };
 

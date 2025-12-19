@@ -10,7 +10,7 @@ export class BirthdaySchedulerService {
   private messageLogRepo: MessageLogRepository;
   private queueUrl: string = '';
 
-  constructor(url: string) {
+  constructor() {
     this.messageLogRepo = new MessageLogRepository();
   }
 
@@ -103,7 +103,18 @@ export class BirthdaySchedulerService {
     for (const user of missedBirthdays) {
       const nextBirthdayTimestamp = this.calculateNextBirthdayTimestamp(user.birthDate, user.timezone);
 
-      const message: BirthdayMessage = {}
+      const message: BirthdayMessage = {
+        userId: user.userId,
+        fullName: `${user.firstName} ${user.lastName}`,
+        scheduledFor: moment(nextBirthdayTimestamp).toISOString(),
+        messageId: randomUUID(),
+      };
+
+      await sqsClient.send(new SendMessageCommand({
+        QueueUrl: this.queueUrl,
+        MessageBody: JSON.stringify(message),
+        DelaySeconds: 0
+      }));
     }
   }
 }

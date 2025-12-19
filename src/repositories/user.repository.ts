@@ -18,4 +18,8 @@ export class UserRepository extends BaseRepository<UserType>{
   async delete(userId: string): Promise<boolean> {
     return super.delete(userId);
   }
+
+  async scanAll(): Promise<UserType[]> {
+    return this.findAll();
+  }
 }
